@@ -11,16 +11,11 @@ EXPOSE 5005
 
 WORKDIR application
 
-ENV WAIT_VERSION 2.9.0
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /application/wait.sh
-RUN chmod a+x /application/wait.sh
-
 COPY --from=builder application/spring-boot-loader/ ./
 COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
 COPY --from=builder application/application/ ./
 
-ENTRYPOINT /application/wait.sh && \
-    java \
+ENTRYPOINT java \
     -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 \
     org.springframework.boot.loader.JarLauncher
